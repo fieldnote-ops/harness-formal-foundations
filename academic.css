@@ -5,3 +5,12 @@
 @media(max-width:1150px){.reader{padding:42px 36px 80px}}
 @media(max-width:760px){.reader{padding:30px 24px 64px}.chapter-title{font-size:27px}.reader>h1:not(.chapter-title){font-size:34px}.prose h2{font-size:21px;padding-top:1em}.prose h3{font-size:18px}.reader-section-link{opacity:1}.prose>blockquote:first-child{font-size:1em}.scholar-flow{display:block;padding-left:0}.scholar-flow li{padding:6px 0}.prose table{font-size:13px}.chapter-row strong{font-size:17px}.chapter-sources h2{font-size:18px}}
 @media print{.reader-section-link,.feedback-float{display:none}.toc a.sub[hidden]{display:block}}
+
+/* Shared scholarly figure: vector art, responsive arrangement and a readable legend. */
+.publication-figure{margin:2.2em 0;padding:22px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.publication-figure picture,.figure-image-link{display:block}.publication-figure-image{display:block;width:100%;height:auto;background:white}
+.publication-figure figcaption{font:14px/1.85 BookSans,sans-serif;color:var(--muted);margin-top:18px}.publication-figure figcaption p{margin:.8em 0}.publication-figure figcaption strong{font-weight:700;color:var(--ink)}
+.figure-actions{display:flex;flex-wrap:wrap;gap:4px 22px;font:13px/1.6 BookSans,sans-serif;margin-top:10px}.figure-actions a{padding:10px 0;min-height:44px;text-decoration:underline;text-underline-offset:4px;color:var(--accent)}
+.figure-data{font:13px/1.85 BookSans,sans-serif;color:var(--muted);margin-top:8px}.figure-data summary{cursor:pointer;min-height:44px;padding:10px 0}.figure-data p{margin:.7em 0}
+@media(max-width:760px){.publication-figure{margin:1.8em 0;padding:18px 0}.publication-figure figcaption{font-size:13px}.publication-figure-image{aspect-ratio:auto}}
+@media print{.figure-actions,.figure-data{display:none}.publication-figure{break-inside:avoid}.publication-figure-image{width:100%;height:auto}}

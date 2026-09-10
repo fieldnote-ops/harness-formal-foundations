@@ -1,0 +1,36 @@
+{
+  "status": "reviewed",
+  "data_kind": "constructed example; no empirical observations",
+  "coordinates_efficiency_correctness": {
+    "a1": [
+      0.25,
+      0.95
+    ],
+    "a2": [
+      0.7,
+      0.85
+    ],
+    "a3": [
+      0.95,
+      0.45
+    ]
+  },
+  "threshold": 0.8,
+  "weights_correctness_efficiency": [
+    0.7,
+    0.3
+  ],
+  "utilities": {
+    "a1": 0.74,
+    "a2": 0.805,
+    "a3": 0.6
+  },
+  "lexicographic_choice": "a1",
+  "feasible_set": [
+    "a1",
+    "a2"
+  ],
+  "weighted_choice": "a2",
+  "all_panels_use_identical_coordinates": true,
+  "semantic_note": "Explicit newly constructed models, not exact rewrites of the original three expressions."
+}
