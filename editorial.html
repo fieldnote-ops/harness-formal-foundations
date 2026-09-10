@@ -1,0 +1,91 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="以模型论与系统论双框架分析编码智能体 Harness 工程。全书八章，支持全文检索与 PDF 阅读。"><title>编校说明 · Harness 工程的形式化基础</title><link rel="stylesheet" href="style.css"></head><body><a class="skip" href="#main">跳至正文</a><header class="top"><a class="brand" href="index.html"><b>H / F</b> HARNESS · FORMAL FOUNDATIONS</a><div class="tools"><button id="menu" class="mobile-menu" aria-label="章节目录" aria-expanded="false">目录</button><button id="search-open">搜索</button><button id="font" aria-label="切换较大字号">Aa</button><button id="theme" aria-label="切换深色模式">明 / 暗</button><a class="download-top" href="harness-formal-foundations.pdf" download>下载 PDF ↗</a></div></header><div class="progress"></div><nav class="sidebar" aria-label="全书目录"><a href="index.html">全书概览</a><p class="nav-part">第一篇 / 形式语言</p><a href="01-model-theory-foundations.html" data-chapter="1"><span>01</span>模型论基础：语言、理论与模型</a><a href="02-harness-as-model-theory.html" data-chapter="2"><span>02</span>Harness 即模型论：Agent 系统的公理化设计</a><p class="nav-part">第二篇 / 系统论架构</p><a href="03-wholeness.html" data-chapter="3"><span>03</span>整体性：理论的相容性与合并</a><a href="04-hierarchy.html" data-chapter="4"><span>04</span>层次性：理论塔</a><a href="05-openness.html" data-chapter="5"><span>05</span>开放性：语言扩展</a><a href="06-purpose.html" data-chapter="6"><span>06</span>目的性：目标函数驱动理论选择</a><p class="nav-part">第三篇 / 综合</p><a href="07-comparative-synthesis.html" data-chapter="7"><span>07</span>比较分析与统一定义</a><a href="08-prospect.html" data-chapter="8"><span>08</span>展望：模型论视角的 Harness 工程未来</a><p class="nav-part">附录</p><a href="editorial.html">编校说明与原始导读</a></nav><div class="layout "><main id="main" class="reader"><p class="eyebrow">EDITORIAL NOTES</p><h1>编校说明与原始导读</h1><article class="prose"><h2>版本与编排</h2><p>本书由八章正文与原始导读编排而成，采用原稿章节顺序。正文中的论证、程序代码与数值沿用原稿，跨章引用已按本书结构整理；公式已统一为带定界符的 TeX，并按语义规范上下标分组。公式型代码块已改为独立公式或正文示意。封面、目录、分篇页和本说明为新增编辑内容。本版属于出版式排版交付，不代表已完成学术审定。</p><h2>引用与版本整理</h2><p>已对照早期十一章稿核查第七章的旧引用。原“11.1 节”的统一定义实际位于旧稿 11.1.7 节，本版将其概述补入第七章；原“11.4.2 节”的负反馈原则改为直接陈述，并指向本书第六章的反馈机制说明。题记与逐子系统比较的旧章号也已整理。</p><h2>源码版本基线</h2><p>omp：v16 系列。版本归档说明明确将本稿标为 v16 冻结；本稿所用的精确小版本及提交号未记录。DS-TUI：原始分析采用的版本历史截至 v0.8.37（2026 年 5 月 14 日）；这一日期是版本历史的截止点，不能据此确认全部源码均锁定于该版本，精确提交号未记录。</p><p>上述信息依据原始分析的版本历史与文档归档记录。本书中的实现细节应结合这一历史范围阅读；“最后排版”日期仅表示文档排版更新时间，不表示源码已按该日期重新核验。</p><h2>后续内容审订</h2><p>正式出版前，建议核对经典模型论术语与工程类比的边界、定理表述及适用条件，并为具体系统版本、性能数值与实现细节补充可追溯来源。本文中的统计性判断与形式化类比沿用原稿，不作为本次排版新增的核验结论。</p><h2>原始导读</h2><h2>Harness 工程的形式化基础（模型论·系统论双框架）</h2>
+<blockquote>
+<p>模型论提供形式化的分析语言（工具），系统论提供宏观的架构原则（组织）。
+读者维护两个世界观，但模型论作为"通用接口"统一了所有微观分析，
+系统论作为"架构原则"统一了所有章节组织。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>篇</th>
+<th>#</th>
+<th>章</th>
+<th>框架定位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第一篇 形式语言</td>
+<td>1</td>
+<td>模型论基础</td>
+<td>模型论作为分析工具</td>
+</tr>
+<tr>
+<td></td>
+<td>2</td>
+<td>Harness 即模型论</td>
+<td>模型论作用于 Harness</td>
+</tr>
+<tr>
+<td>第二篇 系统论架构</td>
+<td>3</td>
+<td>整体性：理论的相容性与合并</td>
+<td>系统论组织 × 模型论分析</td>
+</tr>
+<tr>
+<td></td>
+<td>4</td>
+<td>层次性：理论塔</td>
+<td>系统论组织 × 模型论分析</td>
+</tr>
+<tr>
+<td></td>
+<td>5</td>
+<td>开放性：语言扩展</td>
+<td>系统论组织 × 模型论分析</td>
+</tr>
+<tr>
+<td></td>
+<td>6</td>
+<td>目的性：目标函数驱动理论选择</td>
+<td>系统论组织 × 控制论分析（子框架）</td>
+</tr>
+<tr>
+<td>第三篇 综合</td>
+<td>7</td>
+<td>比较分析与统一定义</td>
+<td>全综合</td>
+</tr>
+<tr>
+<td></td>
+<td>8</td>
+<td>展望</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2>认知负担分析</h2>
+<p>读者需要同时维护两个世界观：</p>
+<ul>
+<li><strong>模型论</strong>作为规范分析语言——所有微观机制（工具签名、提示词公理、缓存指纹）都用"理论 <span class="math-inline" role="math" aria-label="T" data-tex="T"><img class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" alt="" aria-hidden="true" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"></span>""结构 <span class="math-inline" role="math" aria-label="M" data-tex="M"><img class="math-svg" src="assets/math/77e9cd4e18d29028f893.svg" alt="" aria-hidden="true" style="width:1.1890em;height:0.7725em;vertical-align:0.0000em"></span>""解释函数 <span class="math-inline" role="math" aria-label="I" data-tex="I"><img class="math-svg" src="assets/math/4d8a4c9e6173efc13255.svg" alt="" aria-hidden="true" style="width:0.5700em;height:0.7725em;vertical-align:0.0000em"></span>""满足关系 <span class="math-inline" role="math" aria-label="\models" data-tex="\models"><img class="math-svg" src="assets/math/75a9adddd1eebf5030d1.svg" alt="" aria-hidden="true" style="width:0.9810em;height:1.1300em;vertical-align:-0.2815em"></span>"来表述</li>
+<li><strong>系统论</strong>作为章节组织原则——第3-6章按四大原理编排</li>
+</ul>
+<p>双框架增加了认知负担，也提高了分析精度。模型论的语言工具使得微观机制的描述更加精确（"提示词即公理集"比"提示词是系统约束"更精确），同时模型论的"软满足"概念自然处理了LLM的不确定性。</p>
+<h2>章节文件</h2>
+<h3>第一篇：形式语言</h3>
+<ul>
+<li><code>01-model-theory-foundations.md</code> — 模型论基础</li>
+<li><code>02-harness-as-model-theory.md</code> — Harness 即模型论</li>
+</ul>
+<h3>第二篇：系统论架构</h3>
+<ul>
+<li><code>03-wholeness.md</code> — 整体性</li>
+<li><code>04-hierarchy.md</code> — 层次性</li>
+<li><code>05-openness.md</code> — 开放性</li>
+<li><code>06-purpose.md</code> — 目的性</li>
+</ul>
+<h3>第三篇：综合</h3>
+<ul>
+<li><code>07-comparative-synthesis.md</code> — 比较分析与统一定义</li>
+<li><code>08-prospect.md</code> — 展望</li>
+</ul></article><footer class="foot">Harness 工程的形式化基础<br>作者：锵与D老师 · 模型论与系统论双框架<br>内容据原始 Markdown 编排，编校事项见附录。</footer></main></div><dialog id="search-dialog" aria-label="全文搜索"><div class="search-head"><input id="query" aria-label="搜索关键词" placeholder="搜索概念、工具或代码…"><button id="search-close">关闭</button></div><p id="search-status" class="search-status" aria-live="polite">输入关键词，搜索全部八章正文。</p><div id="results"></div></dialog><script src="app.js"></script></body></html>

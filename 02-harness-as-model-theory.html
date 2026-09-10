@@ -1,0 +1,481 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="以模型论与系统论双框架分析编码智能体 Harness 工程。全书八章，支持全文检索与 PDF 阅读。"><title>第二章 Harness 即模型论：Agent 系统的公理化设计 · Harness 工程的形式化基础</title><link rel="stylesheet" href="style.css"></head><body><a class="skip" href="#main">跳至正文</a><header class="top"><a class="brand" href="index.html"><b>H / F</b> HARNESS · FORMAL FOUNDATIONS</a><div class="tools"><button id="menu" class="mobile-menu" aria-label="章节目录" aria-expanded="false">目录</button><button id="search-open">搜索</button><button id="font" aria-label="切换较大字号">Aa</button><button id="theme" aria-label="切换深色模式">明 / 暗</button><a class="download-top" href="harness-formal-foundations.pdf" download>下载 PDF ↗</a></div></header><div class="progress"></div><nav class="sidebar" aria-label="全书目录"><a href="index.html">全书概览</a><p class="nav-part">第一篇 / 形式语言</p><a href="01-model-theory-foundations.html" data-chapter="1"><span>01</span>模型论基础：语言、理论与模型</a><a href="02-harness-as-model-theory.html" data-chapter="2" class="active" aria-current="page"><span>02</span>Harness 即模型论：Agent 系统的公理化设计</a><p class="nav-part">第二篇 / 系统论架构</p><a href="03-wholeness.html" data-chapter="3"><span>03</span>整体性：理论的相容性与合并</a><a href="04-hierarchy.html" data-chapter="4"><span>04</span>层次性：理论塔</a><a href="05-openness.html" data-chapter="5"><span>05</span>开放性：语言扩展</a><a href="06-purpose.html" data-chapter="6"><span>06</span>目的性：目标函数驱动理论选择</a><p class="nav-part">第三篇 / 综合</p><a href="07-comparative-synthesis.html" data-chapter="7"><span>07</span>比较分析与统一定义</a><a href="08-prospect.html" data-chapter="8"><span>08</span>展望：模型论视角的 Harness 工程未来</a><p class="nav-part">附录</p><a href="editorial.html">编校说明与原始导读</a></nav><div class="layout has-toc"><main id="main" class="reader"><p class="eyebrow">CHAPTER 02</p><h1 class="chapter-title">第二章 Harness 即模型论：Agent 系统的公理化设计</h1><article class="prose"><blockquote>
+<p>本章建立如下命题：Coding Agent 的 harness 设计，本质上是在构造一个形式系统。提示词工程师选择公理，工具接口定义签名，运行时路由提供解释函数，验证逻辑执行模型检查，扩展机制实现理论扩充。这不是比喻——这些术语在模型论中的精确含义直接映射到代码结构。</p>
+</blockquote>
+<hr/>
+<h2 id="c2-s1">2.1 系统提示词作为理论 <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span></h2>
+<p>在一阶逻辑中，<strong>理论（theory）</strong> <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span> 是语言 <span aria-label="L" class="math-inline" data-tex="L" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/f73579311156fe055d5f.svg" style="width:0.7705em;height:0.7725em;vertical-align:0.0000em"/></span> 中的一组句子（sentences）的闭包。每个句子通过逻辑连接词和量词约束着结构中谓词与函数的解释。在 Agent 系统中，系统提示词就是 <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span> 的载体——它规定了 Agent 的身份公理、协议规则、工具偏好和约束条件。LLM 的每一次推理输出构成了一个结构 <span aria-label="M" class="math-inline" data-tex="M" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/77e9cd4e18d29028f893.svg" style="width:1.1890em;height:0.7725em;vertical-align:0.0000em"/></span>；当会话正确运行时，我们期望 <span aria-label="M \models T" class="math-inline" data-tex="M \models T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/60f13b0c6b717497508e.svg" style="width:3.5945em;height:1.1300em;vertical-align:-0.2815em"/></span>。</p>
+<h3 id="c2-s2">2.1.1 DS-TUI：单体公理化与 264 行公理系</h3>
+<p>DeepSeek-TUI 的系统提示词集中在 <code>base.md</code> 中——约 264 行的单体文件，通过 <code>include_str!()</code> 在编译时嵌入二进制。这种单体策略的核心优势是<strong>理论一致性</strong>：所有公理在同一逻辑空间中定义，无跨文件依赖导致的隐含不一致风险。</p>
+<p><code>base.md</code> 的公理可按逻辑类型归类：</p>
+<p><strong>身份公理</strong>定义模型 <span aria-label="M" class="math-inline" data-tex="M" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/77e9cd4e18d29028f893.svg" style="width:1.1890em;height:0.7725em;vertical-align:0.0000em"/></span> 的存在性前提：</p>
+<pre><code class="language-markdown">You are DeepSeek TUI. You're already running inside it.
+Do not launch a nested interactive `deepseek` session
+unless the user explicitly asks.
+</code></pre>
+<p>这引入了约束 <span aria-label="\neg\exists x\, (\mathrm{IsNestedSession}(x))" class="math-inline" data-tex="\neg\exists x\, (\mathrm{IsNestedSession}(x))" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/c282b0dffec410abce61.svg" style="width:12.3800em;height:1.1310em;vertical-align:-0.2830em"/></span>——模型必须承认自己已在 TUI 内部运行，禁止递归启动。</p>
+<p><strong>协议公理</strong>定义推理规则：</p>
+<pre><code class="language-markdown">PREVIEW — Before diving into a large task, survey the terrain.
+CHUNK + map-reduce — split into independent sub-tasks.
+RECURSIVE — decompose recursively until each leaf is tractable.
+</code></pre>
+<p>三种分解模式、验证纪律（<code>verify before proceeding</code>）、路径安全检查（<code>resolve_path</code>）以条件语句的形式约束了推理路径的选择。</p>
+<p><strong>工具箱公理</strong>定义函数符号的偏好排序：</p>
+<pre><code class="language-markdown">### `apply_patch`
+Use `apply_patch` for structural edits, coordinated changes,
+or cases where line context matters. Use `write_file` for
+brand-new files, full-file rewrites...
+</code></pre>
+<p>这是一个<strong>函数选择公理</strong>：对于 <span aria-label="c \in \mathrm{Category}" class="math-inline" data-tex="c \in \mathrm{Category}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/01a027c735d944616659.svg" style="width:6.3695em;height:1.0305em;vertical-align:-0.2330em"/></span>，应使用 <span aria-label="f_{C}" class="math-inline" data-tex="f_{C}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/8092ca1cb3e63d641b2a.svg" style="width:1.2560em;height:1.0295em;vertical-align:-0.2320em"/></span> 而非 <span aria-label="g_{C}" class="math-inline" data-tex="g_{C}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/a5d7046bbe82ac0444cf.svg" style="width:1.2415em;height:0.7320em;vertical-align:-0.2320em"/></span>。它定义了语言 <span aria-label="L" class="math-inline" data-tex="L" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/f73579311156fe055d5f.svg" style="width:0.7705em;height:0.7725em;vertical-align:0.0000em"/></span> 中的<strong>标准模型约束</strong>——不是"什么可以做"，而是"做什么时应该用什么工具"。</p>
+<p><strong>验证公理</strong>施加证据门槛：</p>
+<pre><code class="language-markdown">After every tool call that produces a result you'll act on,
+verify before proceeding:
+- File reads: confirm the line numbers...
+- Shell commands: check stdout, not just exit code...
+</code></pre>
+<p>这是理论 <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span> 中最强的约束之一：模型不能仅凭工具名就信任结果，而必须检查输出内容。它引入了一种<strong>认知验证义务</strong>——<span aria-label="M" class="math-inline" data-tex="M" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/77e9cd4e18d29028f893.svg" style="width:1.1890em;height:0.7725em;vertical-align:0.0000em"/></span> 必须在完成任务之前产生可观察的验证证据。</p>
+<p><strong>缓存感知公理</strong>是元理论层级的约束：</p>
+<pre><code class="language-markdown">Prefix cache economics. V4 caches shared prefixes at 128-token
+granularity with ~90% cost discount. Prefer appending to existing
+messages over mutating old ones...
+</code></pre>
+<p>这是理论 <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span> 中关于<strong>理论执行成本</strong>的命题。传统模型论不关心公理集的"执行效率"，但在 LLM 系统中，前缀缓存的命中率直接影响系统的经济可行性。<span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span> 不仅控制了 <span aria-label="M" class="math-inline" data-tex="M" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/77e9cd4e18d29028f893.svg" style="width:1.1890em;height:0.7725em;vertical-align:0.0000em"/></span> 的形式，还引导 <span aria-label="M" class="math-inline" data-tex="M" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/77e9cd4e18d29028f893.svg" style="width:1.1890em;height:0.7725em;vertical-align:0.0000em"/></span> 选择成本最低的满足路径。</p>
+<p>单体公理化的核心优势在于<strong>前缀缓存效率</strong>：264 行的 <code>base.md</code> 在所有同一版本的会话间共享相同字节前缀，DeepSeek V4 的 128-token 粒度缓存可以跨越用户和会话边界命中。代价是<strong>用户扩展困难</strong>：任何对 <code>base.md</code> 的修改都需要重新编译。</p>
+<h3 id="c2-s3">2.1.2 omp：模块化公理化与理论分片</h3>
+<p>Oh My Pi 以截然不同的方式组织理论 <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span>。其提示系统不是单体文件，而是通过<strong>技能（skills）、规则（rules）、目标（goals）、记忆（memories）</strong> 四个正交维度组装的。技能系统（<code>packages/coding-agent/src/extensibility/skills.ts</code>）从文件系统扫描 <code>SKILL.md</code> 文件，规则系统（<code>rules/</code> 目录）定义约束性指令，目标系统（<code>goals/</code>）描述行为模式，记忆系统（<code>memories/</code>）提供跨会话的事实知识。</p>
+<p>在模型论中，这构成了<strong>理论的分片（theory fragmentation）</strong>：</p>
+<div aria-label="T_{\mathrm{omp}} = T_{\mathrm{core}} \cup T_{\mathrm{skills}} \cup T_{\mathrm{rules}} \cup T_{\mathrm{goals}} \cup T_{\mathrm{memories}}" class="math-display" data-tex="T_{\mathrm{omp}} = T_{\mathrm{core}} \cup T_{\mathrm{skills}} \cup T_{\mathrm{rules}} \cup T_{\mathrm{goals}} \cup T_{\mathrm{memories}}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/f0b428a6532078ce72e5.svg" style="width:22.4020em;height:1.1005em;vertical-align:-0.3345em"/></div>
+<p>其中：</p>
+<div aria-label="\begin{aligned} T_{\mathrm{skills}} = \bigcup _{s \in \mathrm{ActiveSkills}} T_{s} \\ T_{\mathrm{rules}} = \bigcup _{r \in \mathrm{ActiveRules}} T_{r} \end{aligned}" class="math-display" data-tex="\begin{aligned} T_{\mathrm{skills}} = \bigcup _{s \in \mathrm{ActiveSkills}} T_{s} \\ T_{\mathrm{rules}} = \bigcup _{r \in \mathrm{ActiveRules}} T_{r} \end{aligned}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/ea9990be5df0968c3727.svg" style="width:10.3250em;height:5.3180em;vertical-align:-2.3760em"/></div>
+<ul>
+<li><span aria-label="T_{\mathrm{skills}}" class="math-inline" data-tex="T_{\mathrm{skills}}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4e918c7100a4d10c9c29.svg" style="width:2.4745em;height:0.9445em;vertical-align:-0.1785em"/></span>：激活技能的理论分片。</li>
+<li><span aria-label="T_{\mathrm{rules}}" class="math-inline" data-tex="T_{\mathrm{rules}}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/d0ebca521c4700bffd32.svg" style="width:2.4055em;height:0.9445em;vertical-align:-0.1785em"/></span>：激活规则的分片。</li>
+<li><span aria-label="T_{\mathrm{goals}}" class="math-inline" data-tex="T_{\mathrm{goals}}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/655a90893d611aa3d469.svg" style="width:2.4920em;height:1.1005em;vertical-align:-0.3345em"/></span> 依赖于当前正在执行的会话阶段。</li>
+<li><span aria-label="T_{\mathrm{memories}}" class="math-inline" data-tex="T_{\mathrm{memories}}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/f26631ecba643b3a8bcd.svg" style="width:4.0485em;height:0.9445em;vertical-align:-0.1785em"/></span> 是跨会话积累的初等扩充。</li>
+</ul>
+<p>关键差异在于<strong>可定义性（definability）的运行时参数化</strong>。在 <code>system-prompt.md</code> 中，Handlebars 模板控制哪些部分被注入最终理论：</p>
+<pre><code class="language-handlebars">{{#if skills.length}}
+# Skills
+{{#each skills}}
+- {{name}}: {{description}}
+{{/each}}
+{{/if}}
+</code></pre>
+<p>工具 <span aria-label="t" class="math-inline" data-tex="t" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/68131b026071c83c4f7f.svg" style="width:0.4085em;height:0.7205em;vertical-align:-0.0125em"/></span> 在语言 <span aria-label="L" class="math-inline" data-tex="L" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/f73579311156fe055d5f.svg" style="width:0.7705em;height:0.7725em;vertical-align:0.0000em"/></span> 中可定义当且仅当存在公式 <span aria-label="\varphi _{t} ( x )" class="math-inline" data-tex="\varphi _{t} ( x )" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/c15811d6c6e7ddc546c2.svg" style="width:2.6495em;height:1.1310em;vertical-align:-0.2830em"/></span> 使得 <span aria-label="M \models \varphi _{t} [ a ] \Leftrightarrow a = t ^{M}" class="math-inline" data-tex="M \models \varphi _{t} [ a ] \Leftrightarrow a = t ^{M}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/77e9cd4e18d29028f893.svg" style="width:1.1890em;height:0.7725em;vertical-align:0.0000em"/><wbr/><img alt="" aria-hidden="true" class="math-svg" src="assets/math/dfb4284048ce19d9101c.svg" style="width:6.3170em;height:1.1310em;vertical-align:-0.2830em"/><wbr/><img alt="" aria-hidden="true" class="math-svg" src="assets/math/ca94b52e971f0aef962f.svg" style="width:2.8515em;height:1.0495em;vertical-align:-0.0930em"/></span>。omp 的模板系统保证了：如果工具在当前配置中不存在，任何关于它的公式都不会被注入语言 <span aria-label="L" class="math-inline" data-tex="L" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/f73579311156fe055d5f.svg" style="width:0.7705em;height:0.7725em;vertical-align:0.0000em"/></span>。语言 <span aria-label="L" class="math-inline" data-tex="L" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/f73579311156fe055d5f.svg" style="width:0.7705em;height:0.7725em;vertical-align:0.0000em"/></span> 的签名 <span aria-label="\Sigma" class="math-inline" data-tex="\Sigma" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/54b77ed42e2cc8b086ee.svg" style="width:0.8165em;height:0.7725em;vertical-align:0.0000em"/></span> 在每次会话启动时被<strong>重新构造</strong>。</p>
+<p>这种模块化的代价是<strong>理论一致性维护的分布式问题</strong>。<span aria-label="T_{\mathrm{skills}}" class="math-inline" data-tex="T_{\mathrm{skills}}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4e918c7100a4d10c9c29.svg" style="width:2.4745em;height:0.9445em;vertical-align:-0.1785em"/></span> 中的一个文件修改可能打破与 <span aria-label="T_{\mathrm{core}}" class="math-inline" data-tex="T_{\mathrm{core}}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/081e6d43587bd20c7303.svg" style="width:2.1785em;height:0.9445em;vertical-align:-0.1785em"/></span> 中其他公理的隐含依赖——例如一个技能描述文件修改了某工具的推荐使用模式，但 <code>system-prompt.md</code> 中的工具优先级规则未同步更新，则 <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span> 的内部一致性被破坏。从模型论角度看，不一致的公理集可以导出任意命题（ex contradictione quodlibet）。omp 通过<strong>冲突检测和警告机制</strong>（名称冲突产生警告而非崩溃）来缓解这一问题。</p>
+<p>两个策略的比较：</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>DS-TUI（单体）</th>
+<th>omp（模块化）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>公理源</td>
+<td>单一 <code>base.md</code></td>
+<td>多个文件系统源 + 运行时装配</td>
+</tr>
+<tr>
+<td>一致性保证</td>
+<td>编译时固定</td>
+<td>运行时扫描 + 冲突检测</td>
+</tr>
+<tr>
+<td>用户可扩展性</td>
+<td>有限（需重编译）</td>
+<td>充分（安装技能即可）</td>
+</tr>
+<tr>
+<td>前缀缓存效率</td>
+<td>高（同版本全用户共享）</td>
+<td>中（因人而异的前缀）</td>
+</tr>
+<tr>
+<td>行为可预测性</td>
+<td>高（同一二进制 <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span> 确定）</td>
+<td>中（取决于激活的模块集合）</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="c2-s4">2.2 工具集作为签名 <span aria-label="\Sigma" class="math-inline" data-tex="\Sigma" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/54b77ed42e2cc8b086ee.svg" style="width:0.8165em;height:0.7725em;vertical-align:0.0000em"/></span></h2>
+<p>在模型论中，<strong>签名（signature）</strong> <span aria-label="\Sigma" class="math-inline" data-tex="\Sigma" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/54b77ed42e2cc8b086ee.svg" style="width:0.8165em;height:0.7725em;vertical-align:0.0000em"/></span> 是一个三元组 (F, R, C)：函数符号集合、关系符号集合、常量符号集合。Agent 系统的工具集就是 <span aria-label="\Sigma _{F}" class="math-inline" data-tex="\Sigma _{F}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/ef3e4faad4abfabf0a89.svg" style="width:1.5100em;height:0.9425em;vertical-align:-0.1695em"/></span>——每个工具的名称、参数约束、返回值类型、副作用声明共同构成该函数符号的<strong>类型结构（arity and sort）</strong>。</p>
+<h3 id="c2-s5">2.2.1 DS-TUI：ToolSpec trait 作为编译时契约</h3>
+<p>DS-TUI 以 Rust trait 定义签名。核心是 <code>ToolSpec</code>（<code>crates/tui/src/tools/spec.rs</code>），其方法精确映射了符号定义的各个维度：</p>
+<ul>
+<li><code>name()</code> → <code>&amp;str</code>：函数符号的字符串标识符</li>
+<li><code>description()</code> → <code>&amp;str</code>：符号的预期语义描述</li>
+<li><code>input_schema()</code> → <code>Value</code>：元数（arity）和排序约束（sort constraints），以 JSON Schema 编码</li>
+<li><code>capabilities()</code> → <code>Vec&lt;ToolCapability&gt;</code>：副作用分类（<code>ReadOnly</code>、<code>WritesFiles</code>、<code>ExecutesCode</code>、<code>Network</code> 等），将函数符号映射到特定的权限域</li>
+<li><code>approval_requirement()</code> → <code>ApprovalRequirement</code>：基于 capabilities 自动推导，<code>ExecutesCode → Required</code>，<code>WritesFiles → Suggest</code>——这是权限模型的编译时编码</li>
+<li><code>execute(input, context)</code> → <code>Result&lt;ToolResult, ToolError&gt;</code>：函数的实现——符号在结构中的解释</li>
+</ul>
+<p><code>ToolContext</code> 结构构成了 <span aria-label="\Sigma _{C}" class="math-inline" data-tex="\Sigma _{C}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/626b49cd5bf7dbe04602.svg" style="width:1.5185em;height:0.9600em;vertical-align:-0.1875em"/></span>——常量符号的编译时集合：</p>
+<pre><code class="language-rust">pub struct ToolContext {
+    pub workspace: PathBuf,
+    pub shell_manager: SharedShellManager,
+    pub trust_mode: bool,
+    pub sandbox_policy: SandboxPolicy,
+    pub notes_path: PathBuf,
+    pub mcp_config_path: PathBuf,
+    pub trusted_external_paths: Vec&lt;PathBuf&gt;,
+    pub network_policy: Option&lt;NetworkPolicyDecider&gt;,
+    // ...
+}
+</code></pre>
+<p>这些常量在签名层不可见（不会出现在给 LLM 的 JSON Schema 中），但在解释层可访问。这是编译时的选择：Rust 的类型系统保证所有实现 <code>ToolSpec</code> 的工具都能安全地访问这些常量，且访问路径在编译时确定。</p>
+<p><code>ToolHandler</code> trait（<code>crates/tools/src/lib.rs</code>）提供了独立的执行接口：</p>
+<pre><code class="language-rust">#[async_trait]
+pub trait ToolHandler: Send + Sync {
+    fn kind(&amp;self) -&gt; ToolKind;
+    fn is_mutating(&amp;self) -&gt; bool { false }
+    async fn handle(&amp;self, invocation: ToolInvocation)
+        -&gt; Result&lt;ToolOutput, FunctionCallError&gt;;
+}
+</code></pre>
+<p><code>ToolSpec</code> 与 <code>ToolHandler</code> 的分离反映了签名设计中"语言"与"结构"的分离——<code>ToolSpec</code> 定义了语言中的符号（名称、描述、类型约束），<code>ToolHandler</code> 定义了符号在具体结构中的解释（执行逻辑）。两个 trait 通过 <code>ToolRegistry</code> 关联，后者将函数符号名称映射到 handler 实例。</p>
+<h3 id="c2-s6">2.2.2 omp：AgentTool 接口与多协议运行时契约</h3>
+<p>omp 的签名以 TypeScript 接口定义。基础 <code>Tool</code> 接口（<code>packages/ai/src/types.ts</code>）：</p>
+<pre><code class="language-typescript">export interface Tool&lt;TParameters extends TSchema = TSchema&gt; {
+    name: string;
+    description: string;
+    parameters: TParameters;
+    strict?: boolean;
+    customFormat?: { syntax: "lark" | "regex"; definition: string };
+    customWireName?: string;
+}
+</code></pre>
+<p><code>AgentTool</code> 接口（<code>packages/agent/src/types.ts:380-423</code>）扩展了基础 <code>Tool</code>：</p>
+<pre><code class="language-typescript">export type AgentToolExecFn&lt;TParameters, TDetails, TTheme&gt; = (
+    this: AgentTool&lt;TParameters, TDetails, TTheme&gt;,
+    toolCallId: string,
+    params: Static&lt;TParameters&gt;,
+    signal?: AbortSignal,
+    onUpdate?: AgentToolUpdateCallback&lt;TDetails, TParameters&gt;,
+    context?: AgentToolContext,
+) =&gt; Promise&lt;AgentToolResult&lt;TDetails, TParameters&gt;&gt;;
+</code></pre>
+<p><code>this: AgentTool&lt;...&gt;</code> 的绑定使 execute 函数可以访问工具自身的元数据，<code>AgentToolContext</code> 提供运行时上下文。这种设计将函数符号的实现（<code>execute</code>）、元数据（<code>Tool</code> 接口字段）和运行时上下文（<code>AgentToolContext</code>）清晰地分离到三个不同的类型层次中。</p>
+<p>omp 签名设计的关键特性是<strong>参数的模式验证（Schema validation）</strong> 和<strong>多协议支持</strong>：</p>
+<ul>
+<li>
+<p><code>TSchema</code> 是 Zod schema 和 JSON Schema 的联合类型。<code>validateToolArguments()</code> 函数（<code>packages/ai/src/utils/validation.ts:968-1019</code>）实现了多层次的 coercion：null 标准化 → schema 验证 → 类型修复（字符串"123" → 数字 123）→ 最多重试 <code>MAX_COERCION_PASSES</code> 次。这里的 coercion 机制承认了一个模型论事实：LLM 作为 <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span> 的"证明器"是不完美的。每次 coercion 尝试都在搜索一个"接近"LLM 输出但仍在签名中的结构——这是一种<strong>容错的解释函数</strong>。</p>
+</li>
+<li>
+<p><code>customFormat</code> 和 <code>customWireName</code> 字段允许同一签名 <span aria-label="\Sigma" class="math-inline" data-tex="\Sigma" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/54b77ed42e2cc8b086ee.svg" style="width:0.8165em;height:0.7725em;vertical-align:0.0000em"/></span> 以不同的语法表示呈现给不同的 LLM。例如，有的模型使用 OpenAI 标准的 JSON 函数调用，有的使用 Anthropic 的 tool_use/tool_result 配对，有的通过 grammar-constrained API 以上下文无关文法表示工具。这是模型论中"不同语言描述同一结构"的工程实现。</p>
+</li>
+</ul>
+<h3 id="c2-s7">2.2.3 必要多样性律的模型论表述</h3>
+<p>W. Ross Ashby 的必要多样性律指出：控制系统要有效调节其环境，内部状态的多样性必须至少等于环境扰动的多样性。在签名论中，这一规律被重构为：</p>
+<blockquote>
+<p>签名 <span aria-label="\Sigma _{F}" class="math-inline" data-tex="\Sigma _{F}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/ef3e4faad4abfabf0a89.svg" style="width:1.5100em;height:0.9425em;vertical-align:-0.1695em"/></span> 必须提供足够的函数符号，使得对于论域中每个可执行操作 <span aria-label="o \in \mathrm{Operations}" class="math-inline" data-tex="o \in \mathrm{Operations}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/ba7d16c306de7c9bb386.svg" style="width:7.3470em;height:1.0170em;vertical-align:-0.2195em"/></span>，存在 <span aria-label="f \in \Sigma _{F}" class="math-inline" data-tex="f \in \Sigma _{F}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/f1e6f2fff03b00246b92.svg" style="width:3.5150em;height:1.0295em;vertical-align:-0.2320em"/></span> 能够表达 <span aria-label="o" class="math-inline" data-tex="o" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/5dd98afa2d4bbf162839.svg" style="width:0.5485em;height:0.5115em;vertical-align:-0.0125em"/></span>。</p>
+</blockquote>
+<p>DS-TUI 通过模式驱动的签名选择来管理多样性。<code>ToolRegistryBuilder</code>（<code>crates/tui/src/core/engine/tool_setup.rs:35-103</code>）：</p>
+<pre><code class="language-rust">let mut builder = if mode == AppMode::Plan {
+    ToolRegistryBuilder::new()
+        .with_read_only_file_tools()
+        .with_search_tools()
+        .with_git_tools()
+        // Plan 模式不暴露 shell 工具
+} else {
+    ToolRegistryBuilder::new()
+        .with_agent_tools(self.session.allow_shell)
+        // ...
+};
+</code></pre>
+<p>Plan 模式将签名限制为 <span aria-label="\Sigma _{\mathrm{Plan}} \subset \Sigma _{\mathrm{Agent}}" class="math-inline" data-tex="\Sigma _{\mathrm{Plan}} \subset \Sigma _{\mathrm{Agent}}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/a1844998b4d35e689ad2.svg" style="width:7.0525em;height:1.1100em;vertical-align:-0.3375em"/></span>。这种子签名关系确保模型 <span aria-label="M" class="math-inline" data-tex="M" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/77e9cd4e18d29028f893.svg" style="width:1.1890em;height:0.7725em;vertical-align:0.0000em"/></span> 不能执行修改操作——不是因为 <span aria-label="M" class="math-inline" data-tex="M" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/77e9cd4e18d29028f893.svg" style="width:1.1890em;height:0.7725em;vertical-align:0.0000em"/></span> 被"教导"不去做，而是因为语言中<strong>没有表达这些操作的符号</strong>。这是通过限制签名而非增加约束来实现的模型强制。</p>
+<p>omp 的多样性覆盖更为极端。它支持 32+ 内置工具，加上通过 MCP（Model Context Protocol）动态发现的工具、通过插件系统注册的自定义工具、以及扩展注册的工具。<code>CustomTool</code> 接口（<code>packages/coding-agent/src/extensibility/custom-tools/types.ts:175-222</code>）允许任意 TypeScript 模块定义为工具——论域多样性的覆盖理论上无上限：</p>
+<pre><code class="language-typescript">export interface CustomTool&lt;TParams extends TSchema, TDetails&gt; {
+    name: string;
+    description: string;
+    parameters: TParams;
+    execute: (
+        params: Static&lt;TParams&gt;,
+        signal?: AbortSignal,
+        onUpdate?: AgentToolUpdateCallback&lt;TDetails&gt;,
+    ) =&gt; Promise&lt;CustomToolResult&lt;TDetails&gt;&gt;;
+    renderResult?: (result: TDetails, options: RenderResultOptions) =&gt; string;
+    onSession?: (event: SessionEvent) =&gt; void;
+}
+</code></pre>
+<p><code>onSession</code> 回调允许自定义工具监听会话生命周期事件但不能拦截或修改它们——这是签名扩充时的保守性约束。</p>
+<h2 id="c2-s8">2.3 解释：从符号到运行时行为</h2>
+<p>在模型论中，给定签名 <span aria-label="\Sigma" class="math-inline" data-tex="\Sigma" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/54b77ed42e2cc8b086ee.svg" style="width:0.8165em;height:0.7725em;vertical-align:0.0000em"/></span>，一个 <strong><span aria-label="\Sigma" class="math-inline" data-tex="\Sigma" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/54b77ed42e2cc8b086ee.svg" style="width:0.8165em;height:0.7725em;vertical-align:0.0000em"/></span>-结构</strong> <span aria-label="A" class="math-inline" data-tex="A" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/1d2fea341ae44c0d25fb.svg" style="width:0.8485em;height:0.8100em;vertical-align:0.0000em"/></span> 包含论域 <span aria-label="\vert A \vert" class="math-inline" data-tex="\vert A \vert" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/a8a95068eebbbb885dd3.svg" style="width:1.4775em;height:1.1300em;vertical-align:-0.2820em"/></span> 以及将每个函数符号 <span aria-label="f \in \Sigma _{F}" class="math-inline" data-tex="f \in \Sigma _{F}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/f1e6f2fff03b00246b92.svg" style="width:3.5150em;height:1.0295em;vertical-align:-0.2320em"/></span> 映射到 <span aria-label="\vert A \vert" class="math-inline" data-tex="\vert A \vert" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/a8a95068eebbbb885dd3.svg" style="width:1.4775em;height:1.1300em;vertical-align:-0.2820em"/></span> 上运算的解释函数 <span aria-label="f ^{A}" class="math-inline" data-tex="f ^{A}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/7aae8528686e215fbb00.svg" style="width:1.3760em;height:1.2155em;vertical-align:-0.2320em"/></span>。在 Agent 系统中，解释函数将工具名称（符号）映射到实际的计算机操作（运行时行为）。</p>
+<h3 id="c2-s9">2.3.1 DS-TUI：静态分发与 trait monomorphization</h3>
+<p>DS-TUI 的解释函数由 Rust 的静态分发决定。每个工具实现 <code>ToolSpec</code> trait，其 <code>execute</code> 方法就是解释函数。模型生成 JSON 调用 <code>{name: "read_file", arguments: {path: "src/main.rs"}}</code> 后，处理路径是确定性的：</p>
+<ol>
+<li><strong>解析</strong>：<code>tool_parser.rs</code> 将 LLM 输出解析为 <code>ToolCall</code> 结构体</li>
+<li><strong>路由</strong>：<code>tool_routing.rs</code> 在 <code>ToolRegistry</code> 中查找对应 handler</li>
+<li><strong>上下文准备</strong>：构建 <code>ToolContext</code></li>
+<li><strong>执行</strong>：调用 <code>ToolSpec::execute(input, &amp;context)</code></li>
+<li><strong>结果格式化</strong>：<code>ToolResult { content, success, metadata }</code></li>
+</ol>
+<p>路径在编译时固定。Rust 的 trait 系统和单态化（monomorphization）意味着每个 <code>execute</code> 调用的目标函数在编译时就已知。不存在运行时动态发现新工具的机制（MCP 加载是一次性的，在会话启动时完成）。</p>
+<p>静态解释的核心优势是<strong>路径逃逸保护</strong>。<code>ToolContext::resolve_path()</code>（<code>spec.rs:342-403</code>）在每次文件操作前验证路径是否在 workspace 内：</p>
+<pre><code class="language-rust">pub fn resolve_path(&amp;self, raw: &amp;str) -&gt; Result&lt;PathBuf, ToolError&gt; {
+    let candidate = if Path::new(raw).is_absolute() { PathBuf::from(raw) }
+                    else { self.workspace.join(raw) };
+    // canonicalize and validate against workspace bounds
+    if !candidate_canonical.starts_with(&amp;workspace_normalized)
+        &amp;&amp; !self.is_trusted_external_path(&amp;candidate_canonical)
+    { return Err(ToolError::PathEscape { path: candidate_canonical }); }
+    Ok(canonical)
+}
+</code></pre>
+<p>无论 LLM 请求读取什么路径，解释函数都会在执行前验证它是否在允许的论域内。在模型论语境中，这是对 <span aria-label="f ^{A}" class="math-inline" data-tex="f ^{A}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/7aae8528686e215fbb00.svg" style="width:1.3760em;height:1.2155em;vertical-align:-0.2320em"/></span> 的定义域约束：解释函数仅在参数满足条件时定义。</p>
+<h3 id="c2-s10">2.3.2 omp：动态派遣、coercion 与多供应商容错解释</h3>
+<p>omp 的解释函数是动态发现的。三个运行时决策路径使解释变得复杂：</p>
+<p><strong>MCP 动态发现</strong>：<code>packages/coding-agent/src/mcp/</code> 在运行时通过 MCP 协议发现外部工具服务器。工具签名在连接时获取而非编译时已知。</p>
+<p><strong>插件动态导入</strong>：<code>packages/coding-agent/src/extensibility/plugins/loader.ts</code> 展示了核心模式：</p>
+<pre><code class="language-typescript">function resolveManifestEntryFile(joined: string): string | null {
+    for (const name of ["index.ts", "index.js", "index.mjs", "index.cjs"]) {
+        const candidate = path.join(joined, name);
+        if (fs.existsSync(candidate)) return candidate;
+    }
+    // ...
+}
+</code></pre>
+<p>运行时扫描文件系统，动态导入 TypeScript/JavaScript 模块。每个模块可以注册新的函数符号。</p>
+<p><strong>扩展的动态加载</strong>：<code>packages/coding-agent/src/extensibility/extensions/loader.ts</code> 展示了模块被评估为工厂函数或默认导出的灵活模式。</p>
+<p>动态解释的代价是类型安全较弱，错误可能在运行时才暴露。但它的收益是<strong>多供应商容错</strong>——omp 支持 40+ LLM 供应商，每个供应商的消息格式不同。<code>packages/agent/src/agent-loop.ts</code> 中的 <code>normalizeTools()</code> 函数将工具定义统一为五种消息类型的归一化表示：</p>
+<pre><code>1. tool_use / tool_result     — Anthropic 风格
+2. function_call / function   — OpenAI 风格（旧版）
+3. tool_calls / tool_call     — OpenAI 风格（新版）
+4. custom wire format         — 自定义协议（grammar-constrained）
+5. plain text parsing         — 无元协议的模型（依赖输出解析）
+</code></pre>
+<p>归一化层是一个<strong>多协议解释函数</strong> <span aria-label="I_{\mathrm{multi}}" class="math-inline" data-tex="I_{\mathrm{multi}}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/7b1efd7209ac8e5debc6.svg" style="width:2.4585em;height:0.9510em;vertical-align:-0.1785em"/></span>，它将不同供应商的格式映射到内部统一的 <code>ToolCall</code> 结构。在模型论中，这相当于：给定一组不同的语法表示 <span aria-label="\{ L _{1} , L _{2} , \cdots , L_{n} \}" class="math-inline" data-tex="\{ L _{1} , L _{2} , \cdots , L_{n} \}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/ce0a87bb52e434937559.svg" style="width:8.0270em;height:1.1310em;vertical-align:-0.2830em"/></span>，存在解释函数 <span aria-label="I_{i}" class="math-inline" data-tex="I_{i}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/d2a0d3bcc160d2755eda.svg" style="width:0.8675em;height:0.9510em;vertical-align:-0.1785em"/></span> 将每个 <span aria-label="L_{i}" class="math-inline" data-tex="L_{i}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/9f734d25e0bccb1701fe.svg" style="width:1.1400em;height:0.9510em;vertical-align:-0.1785em"/></span> 映射到共同的语义结构 <span aria-label="A" class="math-inline" data-tex="A" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/1d2fea341ae44c0d25fb.svg" style="width:0.8485em;height:0.8100em;vertical-align:0.0000em"/></span>。只要 <span aria-label="\forall i . I_{i} ( L_{i} ) = A" class="math-inline" data-tex="\forall i . I_{i} ( L_{i} ) = A" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/455b22f721fb40fdbbfe.svg" style="width:6.7670em;height:1.1310em;vertical-align:-0.2830em"/></span>，就存在一个<strong>共同的语义核心</strong>，不同"语言"的描述指向同一结构。</p>
+<h3 id="c2-s11">2.3.3 解释策略对比</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>DS-TUI（静态解释）</th>
+<th>omp（动态解释）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工具发现时机</td>
+<td>编译时 + 启动时一次 MCP 加载</td>
+<td>启动时 + 运行时插件/扩展加载</td>
+</tr>
+<tr>
+<td>类型安全</td>
+<td>Rust 编译器保证</td>
+<td>TypeScript + 运行时 schema 验证</td>
+</tr>
+<tr>
+<td>新工具添加</td>
+<td>需要重新编译</td>
+<td>安装插件/技能/扩展即可</td>
+</tr>
+<tr>
+<td>安全保证</td>
+<td>编译时路径锁定</td>
+<td>运行时 coercion + schema 检查</td>
+</tr>
+<tr>
+<td>解释函数可变性</td>
+<td>编译后不可变</td>
+<td>运行时通过插件更新</td>
+</tr>
+<tr>
+<td>多供应商支持</td>
+<td>专为 DeepSeek 优化</td>
+<td>40+ 供应商统一接口</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="c2-s12">2.4 理论修正：反馈作为模型校正</h2>
+<p>经典模型论中，理论 <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span> 一旦选定就固定了。工程实践中，H(LLM) 系统的一个核心特征是其<strong>反馈回路</strong>：系统观察 LLM 的行为偏差，然后以两种方式修正：</p>
+<ul>
+<li><strong>收缩理论</strong>：在不扩展语言的情况下增加约束语句，削除偏离的模型</li>
+<li><strong>扩充语言</strong>：添加新的函数符号或约束类型，扩展可表达性的边界</li>
+</ul>
+<p>两种修正策略对应不同的工程机制。</p>
+<h3 id="c2-s13">2.4.1 收缩理论：DS-TUI 的 capacity_controller</h3>
+<p>DS-TUI 的 capacity controller（<code>crates/tui/src/core/engine/capacity.rs</code>）监视会话的 token 消耗模式，当检测到模型在超出上下文窗口限制的方向上运行时，增加约束语句来限制模型的思维广度。</p>
+<p>收缩理论的逻辑形式：</p>
+<div aria-label="T ' = T \cup \{ \varphi \}" class="math-display" data-tex="T ' = T \cup \{ \varphi \}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/e0991ebd001572598f3b.svg" style="width:6.6070em;height:1.1980em;vertical-align:-0.2830em"/></div>
+<p>其中 <span aria-label="\varphi" class="math-inline" data-tex="\varphi" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/03d617d4ce6469fe5295.svg" style="width:0.7400em;height:0.7465em;vertical-align:-0.2465em"/></span> 是一个新约束语句（如 "Limit your analysis to the specific file changed"），不引入新符号。新理论 <span aria-label="T'" class="math-inline" data-tex="T'" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/3ed65618fe047f8d5167.svg" style="width:1.1735em;height:0.8585em;vertical-align:0.0000em"/></span> 的模型集是 <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span> 的子集：<span aria-label="\mathrm{Mod} ( T ' ) \subset \mathrm{Mod} ( T )" class="math-inline" data-tex="\mathrm{Mod} ( T ' ) \subset \mathrm{Mod} ( T )" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/76af1df20d2a3eb293fa.svg" style="width:4.2855em;height:1.1415em;vertical-align:-0.2830em"/><wbr/><img alt="" aria-hidden="true" class="math-svg" src="assets/math/0a80ae94afa4a749fb44.svg" style="width:5.4170em;height:1.1310em;vertical-align:-0.2830em"/></span>。约束完全通过排除不满足 <span aria-label="\varphi" class="math-inline" data-tex="\varphi" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/03d617d4ce6469fe5295.svg" style="width:0.7400em;height:0.7465em;vertical-align:-0.2465em"/></span> 的模型来工作。</p>
+<p>capacity_controller 在以下条件下执行收缩：</p>
+<ul>
+<li><strong>Token 预算预警</strong>：当前轮次消耗接近阈值时，注入系统级的 token 约束</li>
+<li><strong>注意力扩散检测</strong>：当模型的分析跨越过多文件时，施加减量约束</li>
+<li><strong>递归深度限制</strong>：限制模型的自引用分解深度</li>
+</ul>
+<pre><code class="language-rust">// 核心逻辑：在系统提示词后追加约束
+if should_restrict(current_depth, budget_remaining) {
+    messages.insert(system_idx + 1,
+        Message::system("IMPORTANT: Be concise. Focus on the specific task."));
+}
+</code></pre>
+<p>收缩策略的优点是<strong>理论一致性不受影响</strong>：T' 只是 <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span> 的特化，不改变原有函数符号的含义。代价是<strong>可能过度限制</strong>：<span aria-label="\varphi" class="math-inline" data-tex="\varphi" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/03d617d4ce6469fe5295.svg" style="width:0.7400em;height:0.7465em;vertical-align:-0.2465em"/></span> 可能将合法模型排除在外。</p>
+<h3 id="c2-s14">2.4.2 扩充语言：omp 的 Harmony 泄漏检测</h3>
+<p>omp 的 Harmony 泄漏检测（<code>packages/ai/src/utils/harmony-leak.ts</code>）处理的是语言层次混淆。GPT-5 在特定条件下会在输出文本中泄漏内部协议标记——<code>to=functions.&lt;tool_name&gt;</code> 模式、<code>&lt;|start|&gt;/&lt;|end|&gt;/&lt;|channel|&gt;</code> 标记、以及幽灵 token 如 <code>changedFiles</code>、<code>RTLU</code>、<code>Jsii</code>。</p>
+<p>检测器定义了七种信号类别：</p>
+<pre><code class="language-typescript">const MARKER_RE = /\bto=functions\.[A-Za-z_]\w*/g;           // M: 标记器
+const HARMONY_RE = /&lt;\|(start|end|channel|message|call|return)\|&gt;/g; // 直接 Harmony 令牌
+const CHANNEL_WORD_RE = /\b(?:analysis|commentary|assistant|user|system|developer|tool)\s+to=functions\./; // C: 通道词
+const GLITCH_RE = /\b(?:changedFiles|RTLU|Jsii(?:_commentary)?|\x4aapgolly)\b/; // G: 幽灵 token
+const BODY_CASCADE_RE = /to=functions\.\w+\s+code\b[\s\S]{0,200}?to=functions\./; // B: 体级联
+const FAKE_RESULT_RE = /to=functions\.\w+[\s\S]{0,80}?code_output\s*\nCell\s+\d+:/; // R: 假结果
+</code></pre>
+<p>在模型论中，Harmony 泄漏是一个语言层次混淆的深刻案例。LLM 的内部推理协议泄露到了输出语言中——模型的内部语言 <span aria-label="L_{\mathrm{internal}}" class="math-inline" data-tex="L_{\mathrm{internal}}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4d32c656ca4bfa9564d8.svg" style="width:3.5785em;height:0.9510em;vertical-align:-0.1785em"/></span>（用于规划工具调用）污染了对外语言 <span aria-label="L_{\mathrm{external}}" class="math-inline" data-tex="L_{\mathrm{external}}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/fe57c0a037748f0d539d.svg" style="width:3.6885em;height:0.9510em;vertical-align:-0.1785em"/></span>（对用户可见的输出文本）。两个不同语言层次的符号在同一个论域中出现了混淆。</p>
+<p><code>recoverHarmonyToolCall()</code> 函数实现了恢复逻辑：</p>
+<pre><code class="language-typescript">export function recoverHarmonyToolCall(
+    message: AssistantMessage,
+    detection: HarmonyDetection,
+): HarmonyRecoveredToolCall | undefined {
+    // 截断至污染前最后一个合法字符边界
+    // 插入哨兵标记要求模型重新提交
+}
+</code></pre>
+<p>恢复机制是语用性的而非语义性的：它在污染点截断输入，而非解析被污染输出来提取有效部分。这是<strong>安全退化（graceful degradation）</strong>——承认某些偏差无法在语义层修复，必须在语用层处理。</p>
+<h3 id="c2-s15">2.4.3 两种修正策略的模型论分析</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>收缩理论（DS-TUI capacity_controller）</th>
+<th>扩充语言（omp harmony-leak）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>修正对象</td>
+<td>模型的注意力广度</td>
+<td>模型的输出格式</td>
+</tr>
+<tr>
+<td>操作</td>
+<td><span aria-label="T ' = T \cup \{ \varphi \}" class="math-inline" data-tex="T ' = T \cup \{ \varphi \}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/d87f5d6a3ad3263cdc4e.svg" style="width:6.6070em;height:1.1415em;vertical-align:-0.2830em"/></span>（加约束，语言不变）</td>
+<td>L' = L + {detect, recover}（加符号，表达能力扩展）</td>
+</tr>
+<tr>
+<td>模型集关系</td>
+<td><span aria-label="\mathrm{Mod} ( T ' ) \subset \mathrm{Mod} ( T )" class="math-inline" data-tex="\mathrm{Mod} ( T ' ) \subset \mathrm{Mod} ( T )" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/76af1df20d2a3eb293fa.svg" style="width:4.2855em;height:1.1415em;vertical-align:-0.2830em"/><wbr/><img alt="" aria-hidden="true" class="math-svg" src="assets/math/0a80ae94afa4a749fb44.svg" style="width:5.4170em;height:1.1310em;vertical-align:-0.2830em"/></span></td>
+<td><span aria-label="\mathrm{Mod} ( \Sigma ' ) \subset \mathrm{Mod} ( \Sigma )" class="math-inline" data-tex="\mathrm{Mod} ( \Sigma ' ) \subset \mathrm{Mod} ( \Sigma )" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/b4e23195b96d421deb64.svg" style="width:4.2425em;height:1.1415em;vertical-align:-0.2830em"/><wbr/><img alt="" aria-hidden="true" class="math-svg" src="assets/math/61dcd3cd693424fedb88.svg" style="width:5.4375em;height:1.1310em;vertical-align:-0.2830em"/></span>（通过新符号检测违规）</td>
+</tr>
+<tr>
+<td>一致性影响</td>
+<td>无（纯特化）</td>
+<td>有（新符号需纳入理论）</td>
+</tr>
+<tr>
+<td>失败模式</td>
+<td>过度约束排除合法行为</td>
+<td>漏检 / 误恢复导致状态混乱</td>
+</tr>
+</tbody>
+</table></div>
+<p>收缩理论是<strong>被动-预防型</strong>的——在偏差发生前增加约束。扩充语言是<strong>主动-检测型</strong>的——在偏差发生后识别并恢复。两个策略对应了不同层的反馈：系统层 vs 模型层。</p>
+<h2 id="c2-s16">2.5 保守扩充 vs 非保守扩充</h2>
+<p>在模型论中，给定理论 <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span> 和其扩充 <span aria-label="T ' = T \cup S" class="math-inline" data-tex="T ' = T \cup S" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/583a1351d36df6abd679.svg" style="width:5.4655em;height:0.9515em;vertical-align:-0.0930em"/></span>，T' 是 <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span> 的<strong>保守扩充（conservative extension）</strong> 当且仅当对 <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span> 语言中的任意语句 <span aria-label="\varphi" class="math-inline" data-tex="\varphi" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/03d617d4ce6469fe5295.svg" style="width:0.7400em;height:0.7465em;vertical-align:-0.2465em"/></span>：<span aria-label="T ' \models \varphi \Rightarrow T \models \varphi" class="math-inline" data-tex="T ' \models \varphi \Rightarrow T \models \varphi" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/86351b92ab883871e705.svg" style="width:8.4275em;height:1.1400em;vertical-align:-0.2815em"/></span>。新公理不改变原理论中已可证明的命题。</p>
+<p>在 Agent 系统中，保守扩充是扩展机制的理想目标：添加新工具、技能或插件后，系统应能执行所有原有操作，且原有行为不被改变。</p>
+<h3 id="c2-s17">2.5.1 DS-TUI 的分层叠加：编译时的保守扩充</h3>
+<p>DS-TUI 的提示词组合在确定性层叠顺序（<code>prompts.rs:439-447</code>）中执行：</p>
+<pre><code>1. base.md        — 核心身份、工具箱、执行契约
+2. personality    — 声音与语调覆盖层
+3. mode delta     — 模式特定权限与工作流
+4. approval policy — 工具批准行为
+</code></pre>
+<p>其组合规则保证下层的扩充是上层的保守扩充：</p>
+<div aria-label="T = T_{\mathrm{base}} \cup T_{\mathrm{personality}} \cup T_{\mathrm{mode}} \cup T_{\mathrm{approval}}" class="math-display" data-tex="T = T_{\mathrm{base}} \cup T_{\mathrm{personality}} \cup T_{\mathrm{mode}} \cup T_{\mathrm{approval}}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/087e22a84c26ae3fbb90.svg" style="width:19.3750em;height:1.0985em;vertical-align:-0.3330em"/></div>
+<p>其中各子理论按优先级排序。模式定界可以<strong>限制</strong>基础公理（如 plan 模式限制了执行权限），但不可<strong>否定</strong>基础公理——这是保守扩充的核心保证。</p>
+<p><span aria-label="L_{\mathrm{base}}" class="math-inline" data-tex="L_{\mathrm{base}}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/bb5cb9cb996e212b0241.svg" style="width:2.3795em;height:0.9510em;vertical-align:-0.1785em"/></span> 是语义核心。<span aria-label="L_{\mathrm{personality}}" class="math-inline" data-tex="L_{\mathrm{personality}}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/6caeb55569d7090279a8.svg" style="width:4.7155em;height:1.1055em;vertical-align:-0.3330em"/></span> 添加语气约束但不改变工具语义。<span aria-label="L_{\mathrm{mode}}" class="math-inline" data-tex="L_{\mathrm{mode}}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/07a4abbc5608b5c64f50.svg" style="width:2.7305em;height:0.9510em;vertical-align:-0.1785em"/></span> 可能<strong>移除</strong>某些函数符号（<span aria-label="\Sigma_{\mathrm{Plan}} \subset \Sigma_{\mathrm{Agent}}" class="math-inline" data-tex="\Sigma_{\mathrm{Plan}} \subset \Sigma_{\mathrm{Agent}}" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/0aa28f8706691a9a55e7.svg" style="width:7.0525em;height:1.1100em;vertical-align:-0.3375em"/></span>），但这是<strong>符号的隐去而非否定</strong>——不改变保留符号的解释。</p>
+<p>实现层，DS-TUI 的技能系统也维持了保守性：</p>
+<ul>
+<li>技能只追加信息到理论 <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span>——它们指导模型如何思考特定领域问题，但不修改任何现有工具的解释</li>
+<li>技能不注册新的函数符号——如果需要执行操作，必须使用已有工具</li>
+<li>名称冲突通过 <code>HashMap</code> 去重（先加载的优先）</li>
+<li>搜索深度限制（<code>MAX_DISCOVERY_DEPTH: 8</code>）防止循环和路径爆炸</li>
+</ul>
+<h3 id="c2-s18">2.5.2 omp 的运行时注入：受控的非保守扩充</h3>
+<p>omp 的扩展机制更为复杂，因为插件和自定义工具可以直接在运行时添加新的函数符号。保守性的维持需要通过<strong>设计约束</strong>来保证。</p>
+<p><strong>插件清单（Plugin Manifest）</strong> 定义了插件的入口点：</p>
+<pre><code class="language-typescript">export interface PluginManifest {
+    tools?: string | string[];
+    hooks?: string | string[];
+    commands?: string | string[];
+    extensions?: string | string[];
+    settings?: PluginSettingSchema[];
+    features?: PluginFeature[];
+}
+</code></pre>
+<p>关键设计：插件只能通过<strong>声明</strong>添加功能，不能动态修改已有功能的实现。插件清单中的每个条目指向一个独立的模块文件，以工厂函数形式导出实现：</p>
+<ul>
+<li>新增工具不覆盖现有工具（注册表使用名称去重）</li>
+<li>钩子作为事件处理程序链运行，不阻止其他处理程序</li>
+<li>扩展通过事件总线接收生命周期事件，不能篡改核心循环</li>
+</ul>
+<p><strong>权限的层次限制</strong>是维持保守性的关键原则。<code>hooks/types.ts</code> 的注释直白地说明了这一点：</p>
+<pre><code class="language-typescript">// Parallel to ExtensionUIContext: hooks expose a deliberately narrower UI
+// surface — no terminal-input listener, no editor component override, no
+// theme management — because hooks are invoked from inside the agent loop
+// and must not be able to seize ownership of the editor.
+</code></pre>
+<p>钩子被调用的上下文在 agent 循环内部，因此它们的 UI 权限被<strong>故意收窄</strong>——不能获取终端输入、不能覆盖编辑器组件、不能管理主题。这种最小权限设计确保钩子始终是保守的：它们观察到系统状态但不能劫持核心功能。</p>
+<p><code>CustomTool</code> 接口的 <code>onSession</code> 回调允许工具监听会话生命周期事件（<code>session_start</code>、<code>session_shutdown</code>、<code>session_switch</code> 等），但不能拦截或修改事件传播。这维持了保守性：工具可以<strong>响应</strong>系统状态变化但不能改变传播路径。</p>
+<p><code>CustomToolAPI</code> 的 <code>persist</code> 接口是工具获取持久化状态的唯一途径：</p>
+<pre><code class="language-typescript">export interface CustomToolAPI {
+    persist: {
+        get(key: string): Promise&lt;unknown&gt;;
+        set(key: string, value: unknown): Promise&lt;void&gt;;
+        delete(key: string): Promise&lt;void&gt;;
+    };
+}
+</code></pre>
+<p>它不能访问文件系统、不能执行 shell 命令、不能修改会话状态。这种沙盒化确保了即使工具包含 bug 或恶意逻辑，也不能破坏系统的保守性。</p>
+<h3 id="c2-s19">2.5.3 两类扩充与非保守性</h3>
+<p>DS-TUI 的扩充是编译时确定的、分层的、<strong>必然保守的</strong>：模式层不能否定核心层，技能层不能增加新符号。任何违反这一原则的扩展都无法通过编译。</p>
+<p>omp 的扩充是运行时注入的、分权的、<strong>偶发非保守的</strong>：理论上，一个足够权限的插件可以注册与现有工具同名的handler来"劫持"工具调用（名称不冲突的注册表设计只阻止了同名注册，但确实有重构可能）。实际上，工程上的分层限制（钩子权限窄化、事件分发自省、持久化沙盒）将非保守行为的风险降到可接受水平。</p>
+<p>两者的差异根植于不同哲学：</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>DS-TUI</th>
+<th>omp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>扩充时间</td>
+<td>编译时</td>
+<td>运行时</td>
+</tr>
+<tr>
+<td>扩充方式</td>
+<td>分层叠加</td>
+<td>插件 / 技能 / 扩展注入</td>
+</tr>
+<tr>
+<td>一致性保证</td>
+<td>Rust 类型系统 + 编译检查</td>
+<td>运行时注册表 + 权限约束</td>
+</tr>
+<tr>
+<td>非保守风险</td>
+<td>几乎为 0</td>
+<td>低但存在（通过设计约束控制）</td>
+</tr>
+<tr>
+<td>用户灵活性</td>
+<td>低（需重编译）</td>
+<td>高（即装即用）</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="c2-s20">2.6 小结</h2>
+<p>本章建立了从模型论到 harness 工程的核心映射：</p>
+<ol>
+<li><strong>系统提示词 = 理论 <span aria-label="T" class="math-inline" data-tex="T" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/4dbf612f8197b20d5983.svg" style="width:0.7965em;height:0.7660em;vertical-align:0.0000em"/></span></strong>：DS-TUI 的 264 行单体公理系 vs omp 的模块化理论分片（skills + rules + goals + memories）</li>
+<li><strong>工具集 = 签名 <span aria-label="\Sigma" class="math-inline" data-tex="\Sigma" role="math"><img alt="" aria-hidden="true" class="math-svg" src="assets/math/54b77ed42e2cc8b086ee.svg" style="width:0.8165em;height:0.7725em;vertical-align:0.0000em"/></span></strong>：DS-TUI 的 <code>ToolSpec</code> trait（编译时契约）vs omp 的 <code>AgentTool</code> 接口（多协议运行时契约）</li>
+<li><strong>工具执行 = 解释函数</strong>：DS-TUI 的静态分发（trait monomorphization）vs omp 的动态派遣（多供应商归一化 + coercion）</li>
+<li><strong>反馈 = 理论修正</strong>：DS-TUI 的 capacity_controller（收缩理论）vs omp 的 harmony-leak（扩充语言）</li>
+<li><strong>扩展机制 = 保守扩充</strong>：DS-TUI 的分层叠加（编译时保守）vs omp 的运行时注入（受控的非保守）</li>
+</ol>
+<p>这些映射揭示了一个根本性事实：Harness 设计是模型论在工程中的隐式实践。提示词工程师选择公理，类型系统编码签名，运行时路由实现解释，验证逻辑执行模型检查，扩展机制提供保守或非保守的扩充。理解这一形式化底座，是分析、比较和设计下一代 Agent 系统的前提。</p></article><nav class="prevnext" aria-label="相邻章节"><a href="01-model-theory-foundations.html">← 上一章<br>模型论基础：语言、理论与模型</a><a href="03-wholeness.html">下一章 →<br>整体性：理论的相容性与合并</a></nav><footer class="foot">Harness 工程的形式化基础<br>作者：锵与D老师 · 模型论与系统论双框架<br>内容据原始 Markdown 编排，编校事项见附录。</footer></main></div><aside class="toc" aria-label="本章目录"><p class="eyebrow">本章目录</p><a class="" href="#c2-s1">2.1 系统提示词作为理论 T</a><a class="sub" href="#c2-s2">2.1.1 DS-TUI：单体公理化与 264 行公理系</a><a class="sub" href="#c2-s3">2.1.2 omp：模块化公理化与理论分片</a><a class="" href="#c2-s4">2.2 工具集作为签名 Σ</a><a class="sub" href="#c2-s5">2.2.1 DS-TUI：ToolSpec trait 作为编译时契约</a><a class="sub" href="#c2-s6">2.2.2 omp：AgentTool 接口与多协议运行时契约</a><a class="sub" href="#c2-s7">2.2.3 必要多样性律的模型论表述</a><a class="" href="#c2-s8">2.3 解释：从符号到运行时行为</a><a class="sub" href="#c2-s9">2.3.1 DS-TUI：静态分发与 trait monomorphization</a><a class="sub" href="#c2-s10">2.3.2 omp：动态派遣、coercion 与多供应商容错解释</a><a class="sub" href="#c2-s11">2.3.3 解释策略对比</a><a class="" href="#c2-s12">2.4 理论修正：反馈作为模型校正</a><a class="sub" href="#c2-s13">2.4.1 收缩理论：DS-TUI 的 capacity_controller</a><a class="sub" href="#c2-s14">2.4.2 扩充语言：omp 的 Harmony 泄漏检测</a><a class="sub" href="#c2-s15">2.4.3 两种修正策略的模型论分析</a><a class="" href="#c2-s16">2.5 保守扩充 vs 非保守扩充</a><a class="sub" href="#c2-s17">2.5.1 DS-TUI 的分层叠加：编译时的保守扩充</a><a class="sub" href="#c2-s18">2.5.2 omp 的运行时注入：受控的非保守扩充</a><a class="sub" href="#c2-s19">2.5.3 两类扩充与非保守性</a><a class="" href="#c2-s20">2.6 小结</a></aside><dialog id="search-dialog" aria-label="全文搜索"><div class="search-head"><input id="query" aria-label="搜索关键词" placeholder="搜索概念、工具或代码…"><button id="search-close">关闭</button></div><p id="search-status" class="search-status" aria-live="polite">输入关键词，搜索全部八章正文。</p><div id="results"></div></dialog><script src="app.js"></script></body></html>
