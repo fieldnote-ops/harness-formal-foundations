@@ -6,3 +6,6 @@ body.focus-reading .sidebar,body.focus-reading .toc,body.focus-reading .feedback
 @media(max-width:1150px){.reader{padding:38px 36px 80px}.sidebar{width:215px}.layout{margin-left:215px}}
 @media(max-width:760px){.prose{font-size:var(--size,17px);line-height:1.85}.reader{padding:26px 22px 55px}.layout{margin-left:0}.chapter-title{font-size:28px;line-height:1.45}.prose h2{font-size:22px;margin-top:1.9em}.prose h3{font-size:18px}.prose>blockquote:first-child{margin-bottom:1.7em}.feedback-float{display:none}.reading-settings summary{padding:6px 9px}.top{padding:0 14px}.tools{gap:6px}.reader-section-link{opacity:1;font-size:11px}.reader-dialog{padding:18px}.reader-nav-panel{max-height:58dvh}}
 @media print{.reading-settings,.reader-dialog,.reader-section-link,.reading-status{display:none}.prose{color:black}}
+
+/* Match all primary reading controls, including the native details summary. */
+.top .tools>#menu,.top .tools>#search-open,.top .reading-settings>summary{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;height:40px;min-height:40px;padding:0 12px;line-height:1;font-size:13px;border:1px solid var(--line);border-radius:3px;vertical-align:middle}.top .reading-settings{display:flex;align-items:center}@media(max-width:760px){.top .tools>#menu,.top .tools>#search-open,.top .reading-settings>summary{padding:0 9px}}
